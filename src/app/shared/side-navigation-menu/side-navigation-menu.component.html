@@ -1,0 +1,38 @@
+<div>
+    <kendo-treeview class=""
+        [nodes]="homeNavigation"
+        textField="text"
+        (nodeClick)="onHomeClick()"
+        size="large"
+    >
+    </kendo-treeview>
+    
+    <kendo-treeview
+        [nodes]="items"
+        textField="text"
+        (nodeClick)="onNodeClick($event)"
+        size="large"
+    >
+    </kendo-treeview>
+</div>
+
+
+<div>
+
+    <button *ngIf="!isAddingBoard" class="add-button" kendoButton
+        (click)="startAddingBoard()"
+        size="large"
+        >
+        Add Board
+    </button>
+
+    <kendo-textbox #boardTitleTextBox class="add-text-box" *ngIf="isAddingBoard"
+        size="large"
+        (blur)="onBlurIsAddingBoardSet()"
+        (keydown)="createNewBoard($event)"
+        >
+        value=""
+        (valueChange)=""
+    </kendo-textbox>
+
+</div>

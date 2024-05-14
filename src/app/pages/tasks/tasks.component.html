@@ -1,0 +1,116 @@
+<div class="task-header">
+    <h2 class="task-title-h2"
+        *ngIf="!isEditingTitle"
+        (click)="startEditingTitle()">
+        Tasks Board: {{ boardTitle }}
+    </h2>
+
+    <kendo-textbox #boardTitleTextBox class="task-title-textbox"
+        *ngIf="isEditingTitle"
+        value="{{boardTitle}}"
+        (blur)="onBlurIsAddingBoardSet()"
+        (keydown.enter)="saveEditedTitle()"
+    ></kendo-textbox>
+
+    <button kendoButton
+        class="delete-button"
+        (click)="deleteBoard()"
+        >
+        Delete
+    </button>
+</div>
+
+<kendo-dropdownlist class="board-mode-dropdown" 
+    [data]="boardModes"
+    [value]="defaultItem"
+    valueField="ID"
+    textField="Name"
+    size="large"
+    (valueChange)="onSelectBoxChanged($event)"
+>
+</kendo-dropdownlist>
+
+<button kendoButton *ngIf="!isDashboardMode"
+    (click)="addRow()"
+    size="large"
+    >
+    Add New
+</button>
+
+<kendo-grid #grid
+    *ngIf="!isDashboardMode"
+    [data]="dataSource"
+    [sortable]="true"
+    (edit)="editHandler($event)"
+    (save)="saveHandler($event)"
+    (cancel)="cancelHandler($event)"
+    (remove)="removeHandler($event)"
+>
+    <kendo-grid-column field="subject" editor="text" title="Title"></kendo-grid-column>
+    <kendo-grid-column field="dueDate" editor="date" title="Due Date"></kendo-grid-column>
+    <kendo-grid-column field="status" editor="numeric" title="Status">
+        <ng-template kendoGridCellTemplate let-dataItem>
+            {{ getStatusName(dataItem.status) }}
+        </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="priority" editor="numeric" title="Priority">
+        <ng-template kendoGridCellTemplate let-dataItem>
+            {{ getPriorityName(dataItem.priority) }}
+        </ng-template>
+    </kendo-grid-column>
+
+    <kendo-grid-column field="completion" editor="text" title="Completion"></kendo-grid-column>
+    <kendo-grid-command-column title="">
+        <ng-template kendoGridCellTemplate>
+            <button kendoGridEditCommand >Edit</button>
+            <button kendoGridRemoveCommand >Delete</button>
+            <button kendoGridSaveCommand >Save</button>
+            <button kendoGridCancelCommand >Cancel</button>
+        </ng-template>
+    </kendo-grid-command-column>
+</kendo-grid>
+
+<div class="dashboard" *ngIf="isDashboardMode"
+>
+    <kendo-chart title="Priority Pie Chart">
+        <kendo-chart-legend position="bottom"></kendo-chart-legend>
+        <kendo-chart-series>
+            <kendo-chart-series-item
+                type="pie"
+                [data]="priorityData"
+                field="value"
+                categoryField="category"
+                [labels]="{ visible: true, content: labelContentPieChart } "
+            >
+            </kendo-chart-series-item>
+        </kendo-chart-series>
+    </kendo-chart>
+
+    <kendo-chart title="Status Donut Chart">
+        <kendo-chart-legend position="bottom"></kendo-chart-legend>
+        <kendo-chart-series>
+            <kendo-chart-series-item
+                type="donut"
+                [data]="statusData"
+                field="value"
+                categoryField="category"
+                [labels]="{ visible: true, content: labelContentPieChart } "
+            >
+            </kendo-chart-series-item>
+        </kendo-chart-series>
+    </kendo-chart>
+
+    <kendo-chart>
+        <kendo-chart-title text="Due Date Bar Chart"></kendo-chart-title>
+        <kendo-chart-series>
+            <kendo-chart-series-item
+                type="bar"
+                [data]="dueDateData"
+                field="count"
+                categoryField="date"
+            >
+            </kendo-chart-series-item>
+        </kendo-chart-series>
+      </kendo-chart>
+
+</div>
